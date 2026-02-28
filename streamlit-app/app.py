@@ -12,7 +12,15 @@ from groq import Groq
 # ──────────────────────────────────────────────
 load_dotenv()
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+# Support both .env (local) and Streamlit Cloud secrets
+def get_secret(key: str) -> str:
+    """Get secret from Streamlit secrets (cloud) or .env (local)."""
+    try:
+        return st.secrets[key]
+    except (KeyError, FileNotFoundError):
+        return os.getenv(key, "")
+
+GROQ_API_KEY = get_secret("GROQ_API_KEY")
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 LLM_MODEL = "llama-3.3-70b-versatile"
 CHUNK_SIZE = 1000
